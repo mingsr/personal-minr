@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2563eb">
+<title>Personal Life Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- login -->
+<main id="v-login" class="view view-center" hidden>
+  <form id="login-form" class="card login-card" autocomplete="on" novalidate>
+    <h1>Personal Life Dashboard</h1>
+    <p class="muted">Masuk untuk melanjutkan</p>
+    <label for="l-user">Username</label>
+    <input id="l-user" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+    <label for="l-pass">Password</label>
+    <input id="l-pass" name="password" type="password" autocomplete="current-password" required>
+    <p id="l-err" class="msg-error" role="alert" hidden></p>
+    <button id="l-btn" class="btn btn-primary" type="submit">Masuk</button>
+  </form>
+</main>
+
+<!-- select -->
+<main id="v-select" class="view view-center" hidden>
+  <div class="select-wrap">
+    <h1>Pilih Dashboard</h1>
+    <p class="muted">Halo, <span class="js-name">-</span></p>
+    <button id="s-personal" class="card choice" type="button">
+      <strong>Personal</strong>
+      <span class="muted">Jadwal, tugas, catatan</span>
+    </button>
+    <button id="s-gsr" class="card choice" type="button">
+      <strong>GSR</strong>
+      <span class="badge">Coming Soon</span>
+    </button>
+    <button id="s-logout" class="btn btn-ghost" type="button">Keluar</button>
+  </div>
+</main>
+
+<!-- personal -->
+<div id="v-personal" class="view" hidden>
+  <header class="topbar">
+    <div class="topbar-text">
+      <h1>Selamat datang, <span class="js-name">-</span>!</h1>
+      <p class="muted"><span id="p-date">-</span></p>
+    </div>
+    <div class="topbar-side">
+      <div id="p-clock" class="clock">--:--</div>
+      <div class="topbar-actions">
+        <button id="p-back" class="btn btn-ghost btn-sm" type="button">Ganti</button>
+        <button id="p-logout" class="btn btn-ghost btn-sm" type="button">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card" id="c-jadwal">
+      <h2>Jadwal Hari Ini</h2>
+      <div class="slot" id="jdw-today"><p class="empty">Belum dimuat.</p></div>
+    </section>
+
+    <section class="card" id="c-tugas">
+      <h2>Tugas Mendekati Deadline</h2>
+      <div class="slot" id="tgs-near"><p class="empty">Belum dimuat.</p></div>
+    </section>
+
+    <section class="card" id="c-progress">
+      <h2>Progress Tugas</h2>
+      <div class="slot" id="tgs-progress"><p class="empty">Belum dimuat.</p></div>
+    </section>
+
+    <section class="card" id="c-notif">
+      <h2>Notifikasi</h2>
+      <div class="slot" id="p-notif"><p class="empty">Belum dimuat.</p></div>
+    </section>
+
+    <section class="card" id="c-hadir">
+      <h2>Kehadiran Hari Ini</h2>
+      <div class="slot" id="jdw-attend"><p class="empty">Belum dimuat.</p></div>
+    </section>
+
+    <section class="card" id="c-catatan">
+      <h2>Catatan</h2>
+      <div class="slot scroll" id="ctt-list"><p class="empty">Belum dimuat.</p></div>
+    </section>
+
+    <section class="card" id="c-keuangan">
+      <h2>Keuangan</h2>
+      <p class="muted">Kelola keuangan pribadi di web keuangan.</p>
+      <button id="fin-open" class="btn btn-primary" type="button">Buka Keuangan</button>
+    </section>
+  </div>
+</div>
+
+<!-- gsr -->
+<main id="v-gsr" class="view view-center" hidden>
+  <div class="card gsr-card">
+    <h1>GSR</h1>
+    <p class="badge">Coming Soon</p>
+    <p class="muted">Fitur GSR sedang dalam pengembangan.</p>
+    <button id="g-back" class="btn btn-ghost" type="button">Kembali</button>
+  </div>
+</main>
+
+<div id="toast" class="toast" role="status" hidden></div>
+<div id="boot" class="boot">Memuat...</div>
+<script src="script.js"></script>
+</body>
+</html>
