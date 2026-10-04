@@ -1,7 +1,7 @@
 // cfg
 const CFG = {
   API_URL: 'https://script.google.com/macros/s/AKfycbxk7rjjFRobxTh2h2SpJBJ2XN8CaBxIDAMlbtXN72dcFkmooyiw7PJv9ORRLrfoJFHAcA/exec',        // URL Web App Apps Script (berakhiran /exec)
-  FINANCE_URL: 'https://m8ngsr.github.io/tabugan-pribadi/', // URL web keuangan
+  FINANCE_URL: 'https://mingsr.github.io/tabugan-pribadi/', // URL web keuangan
   TZ: 'Asia/Jakarta',
   TIMEOUT_MS: 30000,
   EVENT_COLORS: { jadwal: '#3b82f6', tugas: '#eab308', acara: '#22c55e', deadline: '#ef4444', lainnya: '#a855f7' }
