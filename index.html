@@ -43,55 +43,132 @@
 <!-- personal -->
 <div id="v-personal" class="view" hidden>
   <header class="topbar">
+    <button id="p-menu" class="menu-btn" type="button" aria-label="Buka menu" aria-controls="p-drawer" aria-expanded="false">☰</button>
     <div class="topbar-text">
       <h1>Selamat datang, <span class="js-name">-</span>!</h1>
       <p class="muted"><span id="p-date">-</span></p>
     </div>
-    <div class="topbar-side">
-      <div id="p-clock" class="clock">--:--</div>
-      <div class="topbar-actions">
-        <button id="p-back" class="btn btn-ghost btn-sm" type="button">Ganti</button>
-        <button id="p-logout" class="btn btn-ghost btn-sm" type="button">Keluar</button>
-      </div>
-    </div>
+    <div id="p-clock" class="clock">--:--</div>
   </header>
 
-  <div class="grid">
-    <section class="card" id="c-jadwal">
-      <h2>Jadwal Hari Ini</h2>
-      <div class="slot" id="jdw-today"><p class="empty">Belum dimuat.</p></div>
+  <div id="p-overlay" class="overlay" hidden></div>
+  <nav id="p-drawer" class="drawer" aria-label="Menu Personal">
+    <div class="drawer-head">
+      <strong>Personal</strong>
+      <span class="muted">Halo, <span class="js-name">-</span></span>
+    </div>
+    <a href="#/dashboard" data-page="dashboard">🏠 Dashboard</a>
+    <a href="#/kalender" data-page="kalender">📅 Kalender</a>
+    <a href="#/jadwal" data-page="jadwal">🗓️ Jadwal</a>
+    <a href="#/tugas" data-page="tugas">📝 Tugas</a>
+    <a href="#/progress" data-page="progress">📊 Progress</a>
+    <a href="#/kehadiran" data-page="kehadiran">✅ Kehadiran</a>
+    <a href="#/catatan" data-page="catatan">📒 Catatan</a>
+    <a href="#/keuangan" data-page="keuangan">💰 Keuangan</a>
+    <div class="drawer-sep"></div>
+    <button id="m-switch" type="button">🔀 Ganti Dashboard</button>
+    <button id="m-logout" type="button">🚪 Keluar</button>
+  </nav>
+
+  <div id="p-main">
+
+    <!-- dashboard: overview, bukan tempat CRUD -->
+    <section class="page" data-page="dashboard">
+      <div class="grid">
+        <section class="card" id="c-jadwal">
+          <h2>Jadwal Hari Ini</h2>
+          <div class="slot" id="jdw-today"><p class="empty">Belum dimuat.</p></div>
+          <a class="card-link" href="#/jadwal">Jadwal →</a>
+        </section>
+
+        <section class="card" id="c-tugas">
+          <h2>Tugas Mendekati Deadline</h2>
+          <div class="slot" id="tgs-near"><p class="empty">Belum dimuat.</p></div>
+          <a class="card-link" href="#/tugas">Lihat Semua Tugas →</a>
+        </section>
+
+        <section class="card" id="c-progress">
+          <h2>Progress Tugas</h2>
+          <div class="slot" id="tgs-progress"><p class="empty">Belum dimuat.</p></div>
+          <a class="card-link" href="#/progress">Lihat Progress →</a>
+        </section>
+
+        <section class="card" id="c-notif">
+          <h2>Notifikasi</h2>
+          <div class="slot" id="p-notif"><p class="empty">Belum dimuat.</p></div>
+        </section>
+
+        <section class="card" id="c-hadir">
+          <h2>Kehadiran Hari Ini</h2>
+          <div class="slot" id="jdw-attend"><p class="empty">Belum dimuat.</p></div>
+          <a class="card-link" href="#/kehadiran">Lihat Kehadiran →</a>
+        </section>
+
+        <section class="card" id="c-catatan">
+          <h2>Catatan</h2>
+          <div class="slot scroll" id="ctt-list"><p class="empty">Belum dimuat.</p></div>
+          <a class="card-link" href="#/catatan">Lihat Catatan →</a>
+        </section>
+
+        <section class="card" id="c-kalender">
+          <h2>Kalender</h2>
+          <p class="muted">Lihat kegiatan per bulan.</p>
+          <a class="card-link" href="#/kalender">Buka Kalender →</a>
+        </section>
+
+        <section class="card" id="c-keuangan">
+          <h2>Keuangan</h2>
+          <p><span class="badge">Coming Soon</span></p>
+          <p class="muted">Sistem keuangan sedang dikembangkan.</p>
+          <button class="btn btn-primary js-fin" type="button">Buka Web Keuangan ↗</button>
+        </section>
+      </div>
     </section>
 
-    <section class="card" id="c-tugas">
-      <h2>Tugas Mendekati Deadline</h2>
-      <div class="slot" id="tgs-near"><p class="empty">Belum dimuat.</p></div>
+    <!-- detail: kerangka sampai backend fiturnya selesai -->
+    <section class="page" data-page="kalender" hidden>
+      <h2 class="page-title">📅 Kalender</h2>
+      <div class="card"><div class="slot" id="cal-page"><p class="empty">Belum tersedia. Dibuat setelah backend Kalender selesai.</p></div></div>
     </section>
 
-    <section class="card" id="c-progress">
-      <h2>Progress Tugas</h2>
-      <div class="slot" id="tgs-progress"><p class="empty">Belum dimuat.</p></div>
+    <section class="page" data-page="jadwal" hidden>
+      <h2 class="page-title">🗓️ Jadwal</h2>
+      <div class="card"><div class="slot" id="jdw-page"><p class="empty">Belum tersedia. Dibuat setelah backend Jadwal selesai.</p></div></div>
     </section>
 
-    <section class="card" id="c-notif">
-      <h2>Notifikasi</h2>
-      <div class="slot" id="p-notif"><p class="empty">Belum dimuat.</p></div>
+    <section class="page" data-page="tugas" hidden>
+      <h2 class="page-title">📝 Tugas</h2>
+      <div class="card"><div class="slot" id="tgs-page"><p class="empty">Belum tersedia. Dibuat setelah backend Tugas selesai.</p></div></div>
     </section>
 
-    <section class="card" id="c-hadir">
-      <h2>Kehadiran Hari Ini</h2>
-      <div class="slot" id="jdw-attend"><p class="empty">Belum dimuat.</p></div>
+    <section class="page" data-page="progress" hidden>
+      <h2 class="page-title">📊 Progress</h2>
+      <div class="card"><div class="slot" id="prg-page"><p class="empty">Belum tersedia. Dihitung dari daftar tugas setelah backend Tugas selesai.</p></div></div>
     </section>
 
-    <section class="card" id="c-catatan">
-      <h2>Catatan</h2>
-      <div class="slot scroll" id="ctt-list"><p class="empty">Belum dimuat.</p></div>
+    <section class="page" data-page="kehadiran" hidden>
+      <h2 class="page-title">✅ Kehadiran</h2>
+      <div class="card">
+        <p class="muted">Rekap dan riwayat kehadiran. Untuk menandai hadir atau mengambil foto, buka Jadwal.</p>
+        <div class="slot" id="att-page"><p class="empty">Belum tersedia. Dibuat setelah backend Kehadiran selesai.</p></div>
+        <a class="card-link" href="#/jadwal">Ubah status di Jadwal →</a>
+      </div>
     </section>
 
-    <section class="card" id="c-keuangan">
-      <h2>Keuangan</h2>
-      <p class="muted">Kelola keuangan pribadi di web keuangan.</p>
-      <button id="fin-open" class="btn btn-primary" type="button">Buka Keuangan</button>
+    <section class="page" data-page="catatan" hidden>
+      <h2 class="page-title">📒 Catatan</h2>
+      <div class="card"><div class="slot" id="ctt-page"><p class="empty">Belum tersedia. Dibuat setelah backend Catatan selesai.</p></div></div>
     </section>
+
+    <section class="page" data-page="keuangan" hidden>
+      <h2 class="page-title">💰 Keuangan</h2>
+      <div class="card">
+        <p><span class="badge">Coming Soon</span></p>
+        <p class="muted">Sistem keuangan sedang dikembangkan. Untuk sekarang, web keuangan berdiri sendiri.</p>
+        <button class="btn btn-primary js-fin" type="button">Buka Web Keuangan ↗</button>
+      </div>
+    </section>
+
   </div>
 </div>
 
