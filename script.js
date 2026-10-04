@@ -1,7 +1,7 @@
 // cfg
 const CFG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbxk7rjjFRobxTh2h2SpJBJ2XN8CaBxIDAMlbtXN72dcFkmooyiw7PJv9ORRLrfoJFHAcA/exec',        
-  FINANCE_URL: 'https://mingsr.github.io/tabugan-pribadi/', // URL web keuangan
+  API_URL: 'https://script.google.com/macros/s/AKfycbxk7rjjFRobxTh2h2SpJBJ2XN8CaBxIDAMlbtXN72dcFkmooyiw7PJv9ORRLrfoJFHAcA/exec',
+  FINANCE_URL: 'https://mingsr.github.io/tabugan-pribadi/', 
   TZ: 'Asia/Jakarta',
   TIMEOUT_MS: 30000,
   EVENT_COLORS: { jadwal: '#3b82f6', tugas: '#eab308', acara: '#22c55e', deadline: '#ef4444', lainnya: '#a855f7' }
@@ -109,10 +109,13 @@ $('login-form').addEventListener('submit', async (ev) => {
 });
 
 async function logout() {
-  try { await api('auth.logout'); } catch (e) { /* tetap keluar walau server gagal */ }
+  // Sesi lokal diakhiri SEKETIKA, tanpa menunggu server (cold start Apps Script bisa beberapa detik).
+  // api() membaca token saat dipanggil (sinkron), jadi request dibuat dulu, baru token dihapus.
+  const req = SES.token ? api('auth.logout') : null;
   SES.clear();
   $('l-user').value = '';
   show('login');
+  if (req) { try { await req; } catch (e) { /* server gagal pun tetap sudah keluar di sisi browser */ } }
 }
 
 // sel
