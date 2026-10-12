@@ -1,7 +1,8 @@
 // cfg
 const CFG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbxk7rjjFRobxTh2h2SpJBJ2XN8CaBxIDAMlbtXN72dcFkmooyiw7PJv9ORRLrfoJFHAcA/exec',       
-  FINANCE_URL: 'https://mingsr.github.io/tabugan-pribadi/', 
+  API_URL: 'https://script.google.com/macros/s/AKfycbxk7rjjFRobxTh2h2SpJBJ2XN8CaBxIDAMlbtXN72dcFkmooyiw7PJv9ORRLrfoJFHAcA/exec', 
+  FINANCE_URL: 'https://mingsr.github.io/tabugan-pribadi/', // URL web keuangan (ditetapkan)
+  BACKEND_BUILD: '2026-10-12-effective',   // versi backend minimum yang dibutuhkan frontend ini (cocokkan dengan BACKEND_BUILD di Main.gs)
   TZ: 'Asia/Jakarta',
   TIMEOUT_MS: 30000,
   EVENT_COLORS: { jadwal: '#3b82f6', berubah: '#f97316', tugas: '#eab308', acara: '#22c55e', deadline: '#ef4444', lainnya: '#a855f7' }
@@ -38,10 +39,34 @@ async function api(action, data) {
   }
   if (!json || json.ok !== true) {
     const code = (json && json.code) || 'INTERNAL';
+    if (code === 'NOT_FOUND' && json && /Action tidak dikenal/.test(String(json.error))) {
+      console.warn('[PLD] Backend tidak mengenal action "' + action + '". Deployment Web App kemungkinan masih versi lama.');
+      showBackendOld('Backend yang dideploy belum mengenal action "' + action + '".');
+      throw mkErr('BACKEND_OLD', 'Backend belum diperbarui (action "' + action + '" tidak dikenal). Lihat pesan di atas.');
+    }
     if (code === 'UNAUTHORIZED' && action !== 'auth.login') { endSession('Sesi berakhir, silakan login ulang.'); }
     throw mkErr(code, (json && json.error) || 'Terjadi kesalahan.');
   }
   return json.data;
+}
+// Diagnosis versi backend: GET /exec mengembalikan { build }. Deployment lama tidak punya field itu.
+function showBackendOld(detail) {
+  const el = $('backend-old'); if (!el) return;
+  el.textContent = detail + ' Buka Apps Script → Deploy → Manage deployments → ikon pensil → Version: "New version" → Deploy. ' +
+    'URL /exec harus tetap yang sama dengan CFG.API_URL.';
+  el.hidden = false;
+}
+async function checkBackend() {
+  if (CFG.API_URL.indexOf('GANTI') === 0) return;
+  try {
+    const r = await fetch(CFG.API_URL, { method: 'GET' });
+    const j = await r.json();
+    const build = j && j.data && j.data.build;
+    if (build !== CFG.BACKEND_BUILD) {
+      console.warn('[PLD] Build backend: ' + (build || '(tidak ada, deployment lama)') + ' | dibutuhkan: ' + CFG.BACKEND_BUILD);
+      showBackendOld('Versi backend yang dideploy: ' + (build || 'lama (tanpa penanda versi)') + ', frontend membutuhkan ' + CFG.BACKEND_BUILD + '.');
+    } else { const el = $('backend-old'); if (el) el.hidden = true; }
+  } catch (e) { console.warn('[PLD] Tidak bisa memeriksa versi backend (GET /exec): ' + e.message); }
 }
 function mkErr(code, msg) { const e = new Error(msg); e.code = code; return e; }
 
@@ -130,6 +155,7 @@ let clockTimer = null;
 
 function persEnter() {
   setName(SES.name);
+  checkBackend();
   tick();
   clearInterval(clockTimer);
   clockTimer = setInterval(tick, 1000);
