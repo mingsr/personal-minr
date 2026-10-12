@@ -45,7 +45,7 @@
   <header class="topbar">
     <button id="p-menu" class="menu-btn" type="button" aria-label="Buka menu" aria-controls="p-drawer" aria-expanded="false">☰</button>
     <div class="topbar-text">
-      <h1>Selamat datang, <span class="js-name">-</span>!</h1>
+      <h1><span id="p-greet">Selamat datang</span>, <span class="js-name">-</span>!</h1>
       <p class="muted"><span id="p-date">-</span></p>
     </div>
     <div id="p-clock" class="clock">--:--</div>
@@ -77,36 +77,36 @@
       <div class="grid">
         <section class="card" id="c-jadwal">
           <h2>Jadwal Hari Ini</h2>
-          <div class="slot" id="jdw-today"><p class="empty">Belum dimuat.</p></div>
+          <div class="slot" id="jdw-today"><p class="empty">Memuat...</p></div>
           <a class="card-link" href="#/jadwal">Jadwal →</a>
         </section>
 
         <section class="card" id="c-tugas">
           <h2>Tugas Mendekati Deadline</h2>
-          <div class="slot" id="tgs-near"><p class="empty">Belum dimuat.</p></div>
+          <div class="slot" id="tgs-near"><p class="empty">Memuat...</p></div>
           <a class="card-link" href="#/tugas">Lihat Semua Tugas →</a>
         </section>
 
         <section class="card" id="c-progress">
           <h2>Progress Tugas</h2>
-          <div class="slot" id="tgs-progress"><p class="empty">Belum dimuat.</p></div>
+          <div class="slot" id="tgs-progress"><p class="empty">Memuat...</p></div>
           <a class="card-link" href="#/progress">Lihat Progress →</a>
         </section>
 
         <section class="card" id="c-notif">
           <h2>Notifikasi</h2>
-          <div class="slot" id="p-notif"><p class="empty">Belum dimuat.</p></div>
+          <div class="slot" id="p-notif"><p class="empty">Belum tersedia. Notifikasi belum punya action di backend.</p></div>
         </section>
 
         <section class="card" id="c-hadir">
           <h2>Kehadiran Hari Ini</h2>
-          <div class="slot" id="jdw-attend"><p class="empty">Belum dimuat.</p></div>
+          <div class="slot" id="jdw-attend"><p class="empty">Memuat...</p></div>
           <a class="card-link" href="#/kehadiran">Lihat Kehadiran →</a>
         </section>
 
         <section class="card" id="c-catatan">
           <h2>Catatan</h2>
-          <div class="slot scroll" id="ctt-list"><p class="empty">Belum dimuat.</p></div>
+          <div class="slot scroll" id="ctt-list"><p class="empty">Memuat...</p></div>
           <a class="card-link" href="#/catatan">Lihat Catatan →</a>
         </section>
 
@@ -128,36 +128,87 @@
     <!-- detail: kerangka sampai backend fiturnya selesai -->
     <section class="page" data-page="kalender" hidden>
       <h2 class="page-title">📅 Kalender</h2>
-      <div class="card"><div class="slot" id="cal-page"><p class="empty">Belum tersedia. Dibuat setelah backend Kalender selesai.</p></div></div>
+      <div class="card">
+        <div id="cal-sync" class="sync-bar" hidden></div>
+        <div class="toolbar">
+          <div class="row-gap">
+            <button id="cal-prev" class="btn btn-ghost btn-sm" type="button" aria-label="Bulan sebelumnya">‹</button>
+            <strong id="cal-label" aria-live="polite">-</strong>
+            <button id="cal-next" class="btn btn-ghost btn-sm" type="button" aria-label="Bulan berikutnya">›</button>
+          </div>
+          <button id="cal-now" class="btn btn-ghost btn-sm" type="button">Bulan ini</button>
+        </div>
+        <div class="slot" id="cal-page"><p class="empty">Memuat...</p></div>
+        <div class="legend" id="cal-legend"></div>
+      </div>
+      <div class="card gap-top" id="cal-detail-card" hidden>
+        <h2 id="cal-detail-h">-</h2>
+        <div class="slot" id="cal-detail"></div>
+      </div>
     </section>
 
     <section class="page" data-page="jadwal" hidden>
       <h2 class="page-title">🗓️ Jadwal</h2>
-      <div class="card"><div class="slot" id="jdw-page"><p class="empty">Belum tersedia. Dibuat setelah backend Jadwal selesai.</p></div></div>
+      <div class="card">
+        <div id="jdw-sync" class="sync-bar" hidden></div>
+        <div class="toolbar">
+          <div class="row-gap">
+            <button id="jw-prev" class="btn btn-ghost btn-sm" type="button" aria-label="Pekan sebelumnya">‹</button>
+            <strong id="jw-label" aria-live="polite">-</strong>
+            <button id="jw-next" class="btn btn-ghost btn-sm" type="button" aria-label="Pekan berikutnya">›</button>
+          </div>
+          <button id="jw-now" class="btn btn-ghost btn-sm" type="button">Pekan ini</button>
+        </div>
+        <div class="slot" id="jdw-page"><p class="empty">Memuat...</p></div>
+      </div>
+      <div class="card gap-top">
+        <div class="toolbar">
+          <h2>Jadwal Mingguan</h2>
+          <button id="js-add" class="btn btn-primary" type="button">+ Tambah Jadwal</button>
+        </div>
+        <div class="slot" id="jdw-list"><p class="empty">Memuat...</p></div>
+      </div>
     </section>
 
     <section class="page" data-page="tugas" hidden>
       <h2 class="page-title">📝 Tugas</h2>
-      <div class="card"><div class="slot" id="tgs-page"><p class="empty">Belum tersedia. Dibuat setelah backend Tugas selesai.</p></div></div>
+      <div class="card">
+        <div class="toolbar">
+          <div class="tabs" id="tgs-tabs" role="tablist" aria-label="Filter tugas"></div>
+          <button id="tgs-add" class="btn btn-primary" type="button">+ Tambah Tugas</button>
+        </div>
+        <div id="tgs-sync" class="sync-bar" hidden></div>
+        <div class="slot" id="tgs-page"><p class="empty">Memuat...</p></div>
+      </div>
     </section>
 
     <section class="page" data-page="progress" hidden>
       <h2 class="page-title">📊 Progress</h2>
-      <div class="card"><div class="slot" id="prg-page"><p class="empty">Belum tersedia. Dihitung dari daftar tugas setelah backend Tugas selesai.</p></div></div>
+      <div class="card"><div class="slot" id="prg-page"><p class="empty">Memuat...</p></div></div>
     </section>
 
     <section class="page" data-page="kehadiran" hidden>
       <h2 class="page-title">✅ Kehadiran</h2>
       <div class="card">
-        <p class="muted">Rekap dan riwayat kehadiran. Untuk menandai hadir atau mengambil foto, buka Jadwal.</p>
-        <div class="slot" id="att-page"><p class="empty">Belum tersedia. Dibuat setelah backend Kehadiran selesai.</p></div>
+        <p class="muted">Rekap dan riwayat kehadiran. Untuk menandai hadir atau menambah foto, buka Jadwal (pertemuan hari ini dan yang sudah lewat).</p>
+        <div class="slot" id="att-page"><p class="empty">Memuat...</p></div>
         <a class="card-link" href="#/jadwal">Ubah status di Jadwal →</a>
       </div>
     </section>
 
     <section class="page" data-page="catatan" hidden>
       <h2 class="page-title">📒 Catatan</h2>
-      <div class="card"><div class="slot" id="ctt-page"><p class="empty">Belum tersedia. Dibuat setelah backend Catatan selesai.</p></div></div>
+      <div class="card">
+        <form id="ctt-form" class="note-form" novalidate>
+          <label for="ctt-new" class="sr-only">Catatan baru</label>
+          <textarea id="ctt-new" rows="3" maxlength="1000" placeholder="Tulis catatan..."></textarea>
+          <div class="row-between">
+            <span class="muted" id="ctt-count">0/1000</span>
+            <button id="ctt-save" class="btn btn-primary" type="submit">Simpan Catatan</button>
+          </div>
+        </form>
+        <div class="slot" id="ctt-page"><p class="empty">Memuat...</p></div>
+      </div>
     </section>
 
     <section class="page" data-page="keuangan" hidden>
@@ -181,6 +232,133 @@
     <button id="g-back" class="btn btn-ghost" type="button">Kembali</button>
   </div>
 </main>
+
+<!-- dialog tugas -->
+<dialog id="d-task" aria-labelledby="dt-title-h">
+  <form id="dt-form" method="dialog" novalidate>
+    <h2 id="dt-title-h">Tambah Tugas</h2>
+    <label for="dt-title">Judul</label>
+    <input id="dt-title" type="text" maxlength="120" required>
+    <label for="dt-course">Mata kuliah / kategori</label>
+    <input id="dt-course" type="text" maxlength="80" required>
+    <div class="two">
+      <div><label for="dt-date">Tanggal deadline</label><input id="dt-date" type="date" required></div>
+      <div><label for="dt-time">Jam</label><input id="dt-time" type="time" value="23:59" required></div>
+    </div>
+    <div class="two">
+      <div><label for="dt-prio">Prioritas</label>
+        <select id="dt-prio"><option value="RENDAH">Rendah</option><option value="SEDANG" selected>Sedang</option><option value="TINGGI">Tinggi</option></select></div>
+      <div><label for="dt-prog">Progres (%)</label><input id="dt-prog" type="number" min="0" max="100" step="1" value="0" inputmode="numeric"></div>
+    </div>
+    <div id="dt-status-wrap" hidden>
+      <label for="dt-status">Status</label>
+      <select id="dt-status"><option value="BELUM">Belum selesai</option><option value="SELESAI">Selesai</option></select>
+    </div>
+    <label for="dt-note">Catatan terakhir (opsional)</label>
+    <textarea id="dt-note" rows="3" maxlength="500"></textarea>
+    <p id="dt-err" class="msg-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button id="dt-cancel" class="btn btn-ghost" type="button">Batal</button>
+      <button id="dt-save" class="btn btn-primary" type="submit">Simpan</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- dialog jadwal -->
+<dialog id="d-sched" aria-labelledby="ds-h">
+  <form id="ds-form" method="dialog" novalidate>
+    <h2 id="ds-h">Tambah Jadwal</h2>
+    <label for="ds-name">Mata kuliah</label>
+    <input id="ds-name" type="text" maxlength="80" required>
+    <label for="ds-dow">Hari</label>
+    <select id="ds-dow"></select>
+    <div class="two">
+      <div><label for="ds-start">Mulai</label><input id="ds-start" type="time" required></div>
+      <div><label for="ds-end">Selesai</label><input id="ds-end" type="time" required></div>
+    </div>
+    <div class="two">
+      <div><label for="ds-mode">Mode</label>
+        <select id="ds-mode"><option value="OFFLINE">Offline</option><option value="ONLINE">Online</option></select></div>
+      <div><label for="ds-active">Status</label>
+        <select id="ds-active"><option value="true">Aktif</option><option value="false">Nonaktif (dijeda)</option></select></div>
+    </div>
+    <label for="ds-loc">Lokasi (opsional)</label>
+    <input id="ds-loc" type="text" maxlength="100">
+    <div class="two">
+      <div><label for="ds-from">Berlaku dari</label><input id="ds-from" type="date"></div>
+      <div><label for="ds-to">Sampai</label><input id="ds-to" type="date"></div>
+    </div>
+    <p class="muted" id="ds-hint">Tanggal dikosongkan: mengikuti awal dan akhir semester.</p>
+    <p id="ds-err" class="msg-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button id="ds-cancel" class="btn btn-ghost" type="button">Batal</button>
+      <button id="ds-save" class="btn btn-primary" type="submit">Simpan</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- dialog ubah pertemuan (override) -->
+<dialog id="d-ov" aria-labelledby="do-h">
+  <form id="do-form" method="dialog" novalidate>
+    <h2 id="do-h">Ubah Pertemuan</h2>
+    <p class="muted" id="do-info"></p>
+    <label for="do-type">Jenis perubahan</label>
+    <select id="do-type">
+      <option value="PINDAH">Pindah tanggal / jam</option>
+      <option value="UBAH_MODE">Ubah mode (Online/Offline)</option>
+      <option value="BATAL">Batalkan pertemuan</option>
+    </select>
+    <div data-for="PINDAH">
+      <label for="do-date">Tanggal baru</label>
+      <input id="do-date" type="date">
+      <div class="two">
+        <div><label for="do-start">Jam mulai baru</label><input id="do-start" type="time"></div>
+        <div><label for="do-end">Jam selesai baru</label><input id="do-end" type="time"></div>
+      </div>
+      <p class="muted">Jam dikosongkan: mengikuti jam jadwal normal.</p>
+    </div>
+    <div data-for="PINDAH UBAH_MODE">
+      <label for="do-mode">Mode</label>
+      <select id="do-mode"></select>
+      <label for="do-loc">Lokasi baru (opsional)</label>
+      <input id="do-loc" type="text" maxlength="100">
+    </div>
+    <label for="do-note">Catatan (opsional)</label>
+    <input id="do-note" type="text" maxlength="200">
+    <p id="do-err" class="msg-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button id="do-reset" class="btn btn-danger" type="button" hidden>Kembalikan ke normal</button>
+      <button id="do-cancel" class="btn btn-ghost" type="button">Batal</button>
+      <button id="do-save" class="btn btn-primary" type="submit">Simpan</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- dialog catatan -->
+<dialog id="d-note" aria-labelledby="dn-h">
+  <form id="dn-form" method="dialog" novalidate>
+    <h2 id="dn-h">Ubah Catatan</h2>
+    <label for="dn-content" class="sr-only">Isi catatan</label>
+    <textarea id="dn-content" rows="6" maxlength="1000"></textarea>
+    <p id="dn-err" class="msg-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button id="dn-cancel" class="btn btn-ghost" type="button">Batal</button>
+      <button id="dn-save" class="btn btn-primary" type="submit">Simpan</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- dialog konfirmasi -->
+<dialog id="d-confirm" aria-labelledby="dc-h">
+  <form method="dialog" id="dc-form">
+    <h2 id="dc-h">Konfirmasi</h2>
+    <p id="dc-msg"></p>
+    <div class="dialog-actions">
+      <button id="dc-no" class="btn btn-ghost" type="button">Batal</button>
+      <button id="dc-yes" class="btn btn-primary" type="submit">Ya</button>
+    </div>
+  </form>
+</dialog>
 
 <div id="toast" class="toast" role="status" hidden></div>
 <div id="boot" class="boot">Memuat...</div>
