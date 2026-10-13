@@ -1,8 +1,8 @@
 // cfg
 const CFG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbxk7rjjFRobxTh2h2SpJBJ2XN8CaBxIDAMlbtXN72dcFkmooyiw7PJv9ORRLrfoJFHAcA/exec', 
-  FINANCE_URL: 'https://mingsr.github.io/tabugan-pribadi/', // URL web keuangan (ditetapkan)
-  BACKEND_BUILD: '2026-10-12-effective',   // versi backend minimum yang dibutuhkan frontend ini (cocokkan dengan BACKEND_BUILD di Main.gs)
+  API_URL: 'https://script.google.com/macros/s/AKfycbxk7rjjFRobxTh2h2SpJBJ2XN8CaBxIDAMlbtXN72dcFkmooyiw7PJv9ORRLrfoJFHAcA/exec',        // URL Web App Apps Script (berakhiran /exec)
+  FINANCE_URL: 'https://mingsr.github.io/tabugan-pribadi/', // URL web keuangan
+  BACKEND_BUILD: '2026-10-13-reminders',   // versi backend minimum yang dibutuhkan frontend ini (cocokkan dengan BACKEND_BUILD di Main.gs)
   TZ: 'Asia/Jakarta',
   TIMEOUT_MS: 30000,
   EVENT_COLORS: { jadwal: '#3b82f6', berubah: '#f97316', tugas: '#eab308', acara: '#22c55e', deadline: '#ef4444', lainnya: '#a855f7' }
@@ -264,12 +264,12 @@ function fmtDeadline(dl) {
 
 // ---------- data ----------
 const DATA = { me: null, tasks: null, notes: null, tasksAt: 0, notesAt: 0, filter: 'aktif',
-  sched: null, ovs: null, metaAt: 0, weekStart: null, week: null, weekAt: 0, today: null, todayAt: 0, attAll: null, attAllAt: 0, calMonth: null, cal: null, calAt: 0 };
+  sched: null, ovs: null, metaAt: 0, weekStart: null, week: null, weekAt: 0, today: null, todayAt: 0, attAll: null, attAllAt: 0, calMonth: null, cal: null, calAt: 0, notif: null, notifAt: 0 };
 const STALE_MS = 30000;
 function resetData() {
   DATA.me = null; DATA.tasks = null; DATA.notes = null; DATA.tasksAt = 0; DATA.notesAt = 0; DATA.filter = 'aktif';
   DATA.sched = null; DATA.ovs = null; DATA.metaAt = 0; DATA.weekStart = null; DATA.week = null; DATA.weekAt = 0; DATA.today = null; DATA.todayAt = 0;
-  DATA.attAll = null; DATA.attAllAt = 0; DATA.calMonth = null; DATA.cal = null; DATA.calAt = 0;
+  DATA.attAll = null; DATA.attAllAt = 0; DATA.calMonth = null; DATA.cal = null; DATA.calAt = 0; DATA.notif = null; DATA.notifAt = 0;
 }
 function warnDays() { return (DATA.me && DATA.me.deadlineWarningDays) || 7; }
 
@@ -635,7 +635,7 @@ function modeChip(m) { return h('span', { class: 'chip ' + (m === 'ONLINE' ? 'on
 
 // ---------- data jadwal / kehadiran ----------
 function attMap(list) { const m = {}; list.forEach((a) => { m[a.scheduleId + '|' + a.occurrenceDate] = a; }); return m; }
-function invalidateSched() { DATA.metaAt = 0; DATA.weekAt = 0; DATA.todayAt = 0; DATA.attAllAt = 0; DATA.calAt = 0; }
+function invalidateSched() { DATA.metaAt = 0; DATA.weekAt = 0; DATA.todayAt = 0; DATA.attAllAt = 0; DATA.calAt = 0; DATA.notifAt = 0; }
 function refreshCurrent() { invalidateSched(); loadForPage(pageFromHash()); }
 function noteSkipped(r1, r2) {
   const n = ((r1 && r1.skipped) || []).length + ((r2 && r2.skipped) || []).length;
@@ -766,6 +766,29 @@ function buildSyncBar(bar, bad, noun, onDone) {
 }
 function unsyncedCount() {
   return (DATA.sched || []).filter((s) => s.syncStatus !== 'SYNCED').length + (DATA.ovs || []).filter((o) => o.syncStatus !== 'SYNCED').length;
+}
+
+// ---------- beranda: pengingat jadwal mendatang (daftar dari backend; BUKAN push) ----------
+async function ensureNotif(force) {
+  if (!force && DATA.notif && Date.now() - DATA.notifAt < STALE_MS) { renderNotif(); return; }
+  if (DATA.notif) renderNotif();
+  try {
+    DATA.notif = await api('notification.upcoming', {}); DATA.notifAt = Date.now(); renderNotif();
+  } catch (e) {
+    if (e.code === 'UNAUTHORIZED') return;
+    if (!DATA.notif) loadFailed($('p-notif'), 'Gagal memuat pengingat: ' + e.message, () => ensureNotif(true));
+    else toast('Gagal menyegarkan pengingat: ' + e.message);
+  }
+}
+function renderNotif() {
+  const box = $('p-notif'); clear(box);
+  const list = (DATA.notif && DATA.notif.reminders) || [];
+  if (!list.length) box.appendChild(h('p', { class: 'empty', text: 'Tidak ada pengingat jadwal dalam ' + ((DATA.notif && DATA.notif.hours) || 48) + ' jam ke depan.' }));
+  list.slice(0, 8).forEach((r) => {
+    const when = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(r.at));
+    box.appendChild(h('div', { class: 'row' }, [h('strong', { text: r.title }), h('div', { class: 'muted', text: when + ' · ' + r.body })]));
+  });
+  box.appendChild(h('p', { class: 'muted', text: 'Daftar ini hanya tampil saat website dibuka. Pengingat saat website tertutup datang dari aplikasi Google Calendar di HP.' }));
 }
 
 // ---------- beranda: jadwal hari ini + kehadiran hari ini ----------
@@ -1125,7 +1148,7 @@ function renderAttAll() {
 
 // ---------- pemuatan per halaman ----------
 function loadForPage(p) {
-  if (p === 'dashboard') { ensureTasks(false); ensureNotes(false); ensureToday(false); }
+  if (p === 'dashboard') { ensureTasks(false); ensureNotes(false); ensureToday(false); ensureNotif(false); }
   else if (p === 'tugas' || p === 'progress') ensureTasks(false);
   else if (p === 'catatan') ensureNotes(false);
   else if (p === 'jadwal') ensureJadwal(false);
